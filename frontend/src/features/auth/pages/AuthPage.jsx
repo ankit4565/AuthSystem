@@ -3,10 +3,10 @@ import { useAuthFlow } from '../hooks/useAuthFlow'
 import './AuthPage.css'
 
 function AuthPage() {
- const apiBase = "https://authsystem-w7d3.onrender.com";
-//   import.meta.env.MODE === "development"
-//     ? "http://localhost:5500"
-//     : "https://authsystem-w7d3.onrender.com";
+ const apiBase = 
+  import.meta.env.MODE === "development"
+    ? "http://localhost:5500"
+    : "https://authsystem-w7d3.onrender.com";
   const {
     mode,
     setMode,
