@@ -9,13 +9,12 @@ const generateToken = require("../utils/generateToken");
 const buildUserLookup = (email) => ({ email });
 
 const sendOtpByEmail = async (email, otp) => {
-  await sendEmail(email, otp);
-};
-
-const queueOtpEmail = (email, otp) => {
-  void sendOtpByEmail(email, otp).catch((error) => {
+  try {
+    await sendEmail(email, otp);
+  } catch (error) {
     console.error("OTP email failed:", error);
-  });
+    throw new Error("Unable to send OTP email");
+  }
 };
 
 const asyncHandler = (handler) => async (req, res) => {
@@ -23,7 +22,7 @@ const asyncHandler = (handler) => async (req, res) => {
     return await handler(req, res);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: error.message || "Internal server error" });
   }
 };
 
@@ -58,7 +57,7 @@ exports.signup = asyncHandler(async (req, res) => {
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
 
-  queueOtpEmail(email, otp);
+  await sendOtpByEmail(email, otp);
 
   return res.json({ message: "OTP sent", userId: pendingUser._id });
 });
@@ -131,7 +130,7 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
   user.otpExpire = Date.now() + 5 * 60 * 1000;
   await user.save();
 
-  queueOtpEmail(email, otp);
+  await sendOtpByEmail(email, otp);
 
   return res.json({ message: "OTP sent" });
 });
