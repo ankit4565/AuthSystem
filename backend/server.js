@@ -10,11 +10,12 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-const allowedOrigins = [
-	"https://auth-system-omega-ashy.vercel.app",
-	"http://localhost:5175",
-	"http://localhost:5174"
-];
+const allowedOrigins = "https://auth-system-omega-ashy.vercel.app";
+//[
+// 	  "https://auth-system-omega-ashy.vercel.app",
+// 	"http://localhost:5175",
+// 	"http://localhost:5173"
+// ];
 
 app.use(
 	cors({

@@ -14,6 +14,7 @@ export function useAuthFlow(apiBase) {
   const [forgotForm, setForgotForm] = useState(emptyForgotForm)
   const [forgotStep, setForgotStep] = useState(FORGOT_STEPS.REQUEST)
   const [message, setMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const resetSignupForm = () => {
     setForm(emptyForm)
@@ -51,6 +52,7 @@ export function useAuthFlow(apiBase) {
   const submitSignup = async (event) => {
     event.preventDefault()
     setMessage('')
+    setIsLoading(true)
 
     try {
       const data = await postAuth(apiBase, '/api/auth/signup', {
@@ -63,12 +65,15 @@ export function useAuthFlow(apiBase) {
       setMessage(data.message || 'OTP sent to your email')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Request failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const submitSignupOtp = async (event) => {
     event.preventDefault()
     setMessage('')
+    setIsLoading(true)
 
     try {
       const data = await postAuth(apiBase, '/api/auth/verify-otp', {
@@ -83,12 +88,15 @@ export function useAuthFlow(apiBase) {
       setMode(AUTH_MODES.LOGIN)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Request failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const submitLogin = async (event) => {
     event.preventDefault()
     setMessage('')
+    setIsLoading(true)
 
     try {
       const data = await postAuth(apiBase, '/api/auth/login', {
@@ -98,12 +106,15 @@ export function useAuthFlow(apiBase) {
       setMessage(data.message || 'Login successful')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Request failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const submitForgotRequest = async (event) => {
     event.preventDefault()
     setMessage('')
+    setIsLoading(true)
 
     try {
       const data = await postAuth(apiBase, '/api/auth/forgot-password', {
@@ -113,12 +124,15 @@ export function useAuthFlow(apiBase) {
       setForgotStep(FORGOT_STEPS.VERIFY)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Request failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const submitForgotOtp = async (event) => {
     event.preventDefault()
     setMessage('')
+    setIsLoading(true)
 
     try {
       const data = await postAuth(apiBase, '/api/auth/verify-reset-otp', {
@@ -129,12 +143,15 @@ export function useAuthFlow(apiBase) {
       setForgotStep(FORGOT_STEPS.RESET)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Request failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const submitNewPassword = async (event) => {
     event.preventDefault()
     setMessage('')
+    setIsLoading(true)
 
     try {
       const data = await postAuth(apiBase, '/api/auth/reset-password', {
@@ -148,6 +165,8 @@ export function useAuthFlow(apiBase) {
       setMode(AUTH_MODES.LOGIN)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Request failed')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -160,6 +179,7 @@ export function useAuthFlow(apiBase) {
     forgotForm,
     forgotStep,
     message,
+    isLoading,
     change,
     changeSignupOtp,
     changeForgot,

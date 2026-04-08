@@ -3,7 +3,10 @@ import { useAuthFlow } from '../hooks/useAuthFlow'
 import './AuthPage.css'
 
 function AuthPage() {
-  const apiBase =  'https://authsystem-w7d3.onrender.com' || 'http://localhost:55'
+ const apiBase = "https://authsystem-w7d3.onrender.com";
+//   import.meta.env.MODE === "development"
+//     ? "http://localhost:5500"
+//     : "https://authsystem-w7d3.onrender.com";
   const {
     mode,
     setMode,
@@ -13,6 +16,7 @@ function AuthPage() {
     forgotForm,
     forgotStep,
     message,
+    isLoading,
     change,
     changeSignupOtp,
     changeForgot,
@@ -68,16 +72,17 @@ function AuthPage() {
 
             {signupStep === SIGNUP_STEPS.DETAILS ? (
               <form onSubmit={submitSignup} className="form">
-                <input name="name" value={form.name} onChange={change} placeholder="Name" />
-                <input name="email" value={form.email} onChange={change} placeholder="Email" />
+                <input name="name" value={form.name} onChange={change} placeholder="Name" disabled={isLoading} />
+                <input name="email" value={form.email} onChange={change} placeholder="Email" disabled={isLoading} />
                 <input
                   name="password"
                   type="password"
                   value={form.password}
                   onChange={change}
                   placeholder="Password"
+                  disabled={isLoading}
                 />
-                <button type="submit">Send OTP</button>
+                <button type="submit" disabled={isLoading}>{isLoading ? 'Sending OTP...' : 'Send OTP'}</button>
               </form>
             ) : null}
 
@@ -88,8 +93,9 @@ function AuthPage() {
                   value={signupOtp}
                   onChange={changeSignupOtp}
                   placeholder="Enter OTP"
+                  disabled={isLoading}
                 />
-                <button type="submit">Verify OTP</button>
+                <button type="submit" disabled={isLoading}>{isLoading ? 'Verifying OTP...' : 'Verify OTP'}</button>
               </form>
             ) : null}
 
@@ -115,15 +121,16 @@ function AuthPage() {
           <>
             <h1>Login</h1>
             <form onSubmit={submitLogin} className="form">
-              <input name="email" value={form.email} onChange={change} placeholder="Email" />
+              <input name="email" value={form.email} onChange={change} placeholder="Email" disabled={isLoading} />
               <input
                 name="password"
                 type="password"
                 value={form.password}
                 onChange={change}
                 placeholder="Password"
+                disabled={isLoading}
               />
-              <button type="submit">Login</button>
+              <button type="submit" disabled={isLoading}>{isLoading ? 'Logging in...' : 'Login'}</button>
             </form>
             <div className="secondary-actions">
               <div className='btn-group'>
@@ -165,8 +172,9 @@ function AuthPage() {
                   value={forgotForm.email}
                   onChange={changeForgot}
                   placeholder="Email"
+                  disabled={isLoading}
                 />
-                <button type="submit">Send reset OTP</button>
+                <button type="submit" disabled={isLoading}>{isLoading ? 'Sending OTP...' : 'Send reset OTP'}</button>
               </form>
             ) : null}
 
@@ -177,14 +185,16 @@ function AuthPage() {
                   value={forgotForm.email}
                   onChange={changeForgot}
                   placeholder="Email"
+                  disabled={isLoading}
                 />
                 <input
                   name="otp"
                   value={forgotForm.otp}
                   onChange={changeForgot}
                   placeholder="Enter OTP"
+                  disabled={isLoading}
                 />
-                <button type="submit">Verify OTP</button>
+                <button type="submit" disabled={isLoading}>{isLoading ? 'Verifying OTP...' : 'Verify OTP'}</button>
               </form>
             ) : null}
 
@@ -195,12 +205,14 @@ function AuthPage() {
                   value={forgotForm.email}
                   onChange={changeForgot}
                   placeholder="Email"
+                  disabled={isLoading}
                 />
                 <input
                   name="otp"
                   value={forgotForm.otp}
                   onChange={changeForgot}
                   placeholder="OTP"
+                  disabled={isLoading}
                 />
                 <input
                   name="newPassword"
@@ -208,8 +220,9 @@ function AuthPage() {
                   value={forgotForm.newPassword}
                   onChange={changeForgot}
                   placeholder="New password"
+                  disabled={isLoading}
                 />
-                <button type="submit">Set new password</button>
+                <button type="submit" disabled={isLoading}>{isLoading ? 'Updating password...' : 'Set new password'}</button>
               </form>
             ) : null}
 
@@ -231,6 +244,7 @@ function AuthPage() {
           </>
         ) : null}
 
+        {isLoading ? <p className="loading-message">Please wait...</p> : null}
         {message ? <p className="message">{message}</p> : null}
       </section>
     </main>
