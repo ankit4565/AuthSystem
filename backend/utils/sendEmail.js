@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 const smtpHost = process.env.SMTP_HOST || "smtp.gmail.com";
-const smtpPort = Number(process.env.SMTP_PORT || 587);
+const smtpPort = Number(process.env.SMTP_PORT || 465);
 const smtpSecure = process.env.SMTP_SECURE
     ? process.env.SMTP_SECURE === "true"
     : smtpPort === 465;
@@ -18,9 +18,9 @@ const transporter = nodemailer.createTransport({
     pool: true,
     maxConnections: 1,
     maxMessages: 50,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
 });
 
 const sendEmail = async (email, otp) => {
