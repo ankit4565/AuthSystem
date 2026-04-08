@@ -1,34 +1,19 @@
-const nodemailer = require("nodemailer");
+const SibApiV3Sdk = require("sib-api-v3-sdk");
 
-const smtpHost = process.env.SMTP_HOST || "smtp-relay.brevo.com";
-const smtpPort = Number(process.env.SMTP_PORT || 587);
-const smtpSecure = process.env.SMTP_SECURE
-    ? process.env.SMTP_SECURE === "true"
-    : smtpPort === 465;
-const smtpUser = process.env.SMTP_USER || process.env.EMAIL;
-const smtpPass = process.env.SMTP_PASS || process.env.PASS;
-const fromEmail = process.env.MAIL_FROM || smtpUser;
+const brevoApiKey = (process.env.BREVO_API_KEY || "").replace(/\s+/g, "");
+const senderEmail = process.env.MAIL_FROM || process.env.EMAIL;
+const senderName = process.env.BREVO_SENDER_NAME || "AuthSystem";
 
-const transporter = nodemailer.createTransport({
-    host: smtpHost,
-    port: smtpPort,
-    secure: smtpSecure,
-    requireTLS: !smtpSecure,
-    family: 4,
-    auth: {
-        user: smtpUser,
-        pass: (smtpPass || "").replace(/\s+/g, ""),
-    },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-});
-
-let isTransportVerified = false;
+const client = SibApiV3Sdk.ApiClient.instance;
+client.authentications["api-key"].apiKey = brevoApiKey;
 
 const sendEmail = async (email, otp) => {
-    if (!smtpUser || !smtpPass) {
-        throw new Error("Email service is not configured");
+    if (!brevoApiKey) {
+        throw new Error("Brevo API key is not configured");
+    }
+
+    if (!senderEmail) {
+        throw new Error("Brevo sender email is not configured");
     }
 
     if (!email) {
@@ -36,18 +21,23 @@ const sendEmail = async (email, otp) => {
     }
 
     try {
-        if (!isTransportVerified) {
-            await transporter.verify();
-            isTransportVerified = true;
-        }
+        const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
-        return await transporter.sendMail({
-            from: fromEmail || smtpUser,
-            to: email,
+        const result = await apiInstance.sendTransacEmail({
+            sender: {
+                email: senderEmail,
+                name: senderName,
+            },
+            to: [{ email }],
             subject: "OTP Verification",
-            text: `Your OTP is ${otp}`,
+            textContent: `Your OTP is ${otp}`,
+            htmlContent: `<p>Your OTP is <strong>${otp}</strong></p>`,
         });
+
+        console.log("Email sent:", result);
+        return result;
     } catch (error) {
+        console.error("Brevo API Error:", error.response?.body || error.message || error);
         throw new Error(`Failed to send OTP email: ${error.message}`);
     }
 };

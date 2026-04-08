@@ -24,7 +24,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "nodemailer": "^6.10.0",
-    "otp-generator": "^4.0.1"
+    "otp-generator": "^4.0.1",
+    "sib-api-v3-sdk": "^8.5.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
