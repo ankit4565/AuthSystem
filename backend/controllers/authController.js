@@ -13,7 +13,7 @@ const sendOtpByEmail = async (email, otp) => {
     await sendEmail(email, otp);
   } catch (error) {
     console.error("OTP email failed:", error);
-    throw new Error("Unable to send OTP email");
+    throw new Error(`Unable to send OTP email: ${error.message}`);
   }
 };
 
