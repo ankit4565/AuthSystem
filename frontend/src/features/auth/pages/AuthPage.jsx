@@ -3,7 +3,7 @@ import { useAuthFlow } from '../hooks/useAuthFlow'
 import './AuthPage.css'
 
 function AuthPage() {
-  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5500'
+  const apiBase =  'https://authsystem-w7d3.onrender.com'
   const {
     mode,
     setMode,
