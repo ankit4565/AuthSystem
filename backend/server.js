@@ -16,14 +16,23 @@ const allowedOrigins = [
 	"http://localhost:5173",
 ];
 
+const corsOptions = {
+	origin(origin, callback) {
+		if (!origin || allowedOrigins.includes(origin)) {
+			return callback(null, true);
+		}
+
+		return callback(new Error("Not allowed by CORS"));
+	},
+	credentials: true,
+	optionsSuccessStatus: 204,
+};
+
 app.use(
-	cors({
-		origin: allowedOrigins,
-		credentials: true,
-	})
+	cors(corsOptions)
 );
 
-app.options("*", cors({ origin: allowedOrigins, credentials: true }));
+app.options(/.*/, cors(corsOptions));
 
 app.use("/api/auth", require("./routes/authRoutes"));
 
