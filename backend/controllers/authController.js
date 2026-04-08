@@ -12,6 +12,12 @@ const sendOtpByEmail = async (email, otp) => {
   await sendEmail(email, otp);
 };
 
+const queueOtpEmail = (email, otp) => {
+  void sendOtpByEmail(email, otp).catch((error) => {
+    console.error("OTP email failed:", error);
+  });
+};
+
 const asyncHandler = (handler) => async (req, res) => {
   try {
     return await handler(req, res);
@@ -52,14 +58,7 @@ exports.signup = asyncHandler(async (req, res) => {
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
 
-  try {
-    await sendOtpByEmail(email, otp);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Failed to send OTP",
-      error: error.message,
-    });
-  }
+  queueOtpEmail(email, otp);
 
   return res.json({ message: "OTP sent", userId: pendingUser._id });
 });
@@ -132,14 +131,7 @@ exports.forgotPassword = asyncHandler(async (req, res) => {
   user.otpExpire = Date.now() + 5 * 60 * 1000;
   await user.save();
 
-  try {
-    await sendOtpByEmail(email, otp);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Failed to send OTP",
-      error: error.message,
-    });
-  }
+  queueOtpEmail(email, otp);
 
   return res.json({ message: "OTP sent" });
 });

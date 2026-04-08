@@ -11,9 +11,9 @@ connectDB();
 
 app.use(express.json());
 const allowedOrigins = [
-	"https://auth-system-omega-ashy.vercel.app",
-	"http://localhost:5175",
-	"http://localhost:5174",
+	// "https://auth-system-omega-ashy.vercel.app",
+	// "http://localhost:5175",
+	"http://localhost:5173"
 ];
 
 app.use(
