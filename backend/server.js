@@ -10,12 +10,19 @@ const app = express();
 connectDB();
 
 app.use(express.json());
+const allowedOrigins = [
+	
+	"https://auth-system-omega-ashy.vercel.app",
+];
+
 app.use(
 	cors({
-		origin: ["http://localhost:5174", "http://127.0.0.1:5174"],
+		origin: allowedOrigins,
 		credentials: true,
 	})
 );
+
+app.options("*", cors({ origin: allowedOrigins, credentials: true }));
 
 app.use("/api/auth", require("./routes/authRoutes"));
 
