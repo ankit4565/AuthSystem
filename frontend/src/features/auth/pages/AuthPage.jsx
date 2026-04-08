@@ -1,4 +1,4 @@
-import { AUTH_MODES, FORGOT_STEPS } from '../constants'
+import { AUTH_MODES, FORGOT_STEPS, SIGNUP_STEPS } from '../constants'
 import { useAuthFlow } from '../hooks/useAuthFlow'
 import './AuthPage.css'
 
@@ -8,15 +8,19 @@ function AuthPage() {
     mode,
     setMode,
     form,
+    signupStep,
+    signupOtp,
     forgotForm,
     forgotStep,
     message,
     change,
+    changeSignupOtp,
     changeForgot,
     resetSignupForm,
     resetLoginForm,
     resetForgotForm,
     submitSignup,
+    submitSignupOtp,
     submitLogin,
     submitForgotRequest,
     submitForgotOtp,
@@ -60,19 +64,35 @@ function AuthPage() {
 
         {isSignup ? (
           <>
-            <h1>Signup</h1>
-            <form onSubmit={submitSignup} className="form">
-              <input name="name" value={form.name} onChange={change} placeholder="Name" />
-              <input name="email" value={form.email} onChange={change} placeholder="Email" />
-              <input
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={change}
-                placeholder="Password"
-              />
-              <button type="submit">Create account</button>
-            </form>
+            <h1>{signupStep === SIGNUP_STEPS.DETAILS ? 'Signup' : 'Verify OTP'}</h1>
+
+            {signupStep === SIGNUP_STEPS.DETAILS ? (
+              <form onSubmit={submitSignup} className="form">
+                <input name="name" value={form.name} onChange={change} placeholder="Name" />
+                <input name="email" value={form.email} onChange={change} placeholder="Email" />
+                <input
+                  name="password"
+                  type="password"
+                  value={form.password}
+                  onChange={change}
+                  placeholder="Password"
+                />
+                <button type="submit">Send OTP</button>
+              </form>
+            ) : null}
+
+            {signupStep === SIGNUP_STEPS.VERIFY ? (
+              <form onSubmit={submitSignupOtp} className="form">
+                <input
+                  name="otp"
+                  value={signupOtp}
+                  onChange={changeSignupOtp}
+                  placeholder="Enter OTP"
+                />
+                <button type="submit">Verify OTP</button>
+              </form>
+            ) : null}
+
             <div className="secondary-actions">
               <button
                 type="button"

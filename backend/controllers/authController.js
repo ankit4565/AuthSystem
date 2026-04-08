@@ -81,7 +81,7 @@ exports.verifyOtp = asyncHandler(async (req, res) => {
     user.otp = null;
     await user.save();
 
-    res.json({ message: "Account verified" });
+    res.json({ message: "Account created successfully" });
 });
 
 

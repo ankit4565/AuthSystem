@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { postAuth } from '../api/authApi'
-import { AUTH_MODES, FORGOT_STEPS } from '../constants'
+import { AUTH_MODES, FORGOT_STEPS, SIGNUP_STEPS } from '../constants'
 
 const emptyForm = { name: '', email: '', password: '' }
 const emptyForgotForm = { email: '', otp: '', newPassword: '' }
@@ -8,12 +8,18 @@ const emptyForgotForm = { email: '', otp: '', newPassword: '' }
 export function useAuthFlow(apiBase) {
   const [mode, setMode] = useState(AUTH_MODES.HOME)
   const [form, setForm] = useState(emptyForm)
+  const [signupStep, setSignupStep] = useState(SIGNUP_STEPS.DETAILS)
+  const [signupUserId, setSignupUserId] = useState('')
+  const [signupOtp, setSignupOtp] = useState('')
   const [forgotForm, setForgotForm] = useState(emptyForgotForm)
   const [forgotStep, setForgotStep] = useState(FORGOT_STEPS.REQUEST)
   const [message, setMessage] = useState('')
 
   const resetSignupForm = () => {
     setForm(emptyForm)
+    setSignupStep(SIGNUP_STEPS.DETAILS)
+    setSignupUserId('')
+    setSignupOtp('')
     setMessage('')
   }
 
@@ -38,6 +44,10 @@ export function useAuthFlow(apiBase) {
     setForgotForm((current) => ({ ...current, [name]: value }))
   }
 
+  const changeSignupOtp = (event) => {
+    setSignupOtp(event.target.value)
+  }
+
   const submitSignup = async (event) => {
     event.preventDefault()
     setMessage('')
@@ -48,7 +58,29 @@ export function useAuthFlow(apiBase) {
         email: form.email,
         password: form.password,
       })
-      setMessage(data.message || 'Signup successful')
+      setSignupUserId(data.userId || '')
+      setSignupStep(SIGNUP_STEPS.VERIFY)
+      setMessage(data.message || 'OTP sent to your email')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Request failed')
+    }
+  }
+
+  const submitSignupOtp = async (event) => {
+    event.preventDefault()
+    setMessage('')
+
+    try {
+      const data = await postAuth(apiBase, '/api/auth/verify-otp', {
+        userId: signupUserId,
+        otp: signupOtp,
+      })
+      setMessage(data.message || 'Account created successfully')
+      setSignupStep(SIGNUP_STEPS.DETAILS)
+      setSignupUserId('')
+      setSignupOtp('')
+      setForm(emptyForm)
+      setMode(AUTH_MODES.LOGIN)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Request failed')
     }
@@ -123,15 +155,19 @@ export function useAuthFlow(apiBase) {
     mode,
     setMode,
     form,
+    signupStep,
+    signupOtp,
     forgotForm,
     forgotStep,
     message,
     change,
+    changeSignupOtp,
     changeForgot,
     resetSignupForm,
     resetLoginForm,
     resetForgotForm,
     submitSignup,
+    submitSignupOtp,
     submitLogin,
     submitForgotRequest,
     submitForgotOtp,

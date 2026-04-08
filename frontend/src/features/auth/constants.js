@@ -10,3 +10,8 @@ export const FORGOT_STEPS = {
   VERIFY: 'verify',
   RESET: 'reset',
 }
+
+export const SIGNUP_STEPS = {
+  DETAILS: 'details',
+  VERIFY: 'verify',
+}
